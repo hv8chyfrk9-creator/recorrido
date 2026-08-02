@@ -33,6 +33,55 @@ local haEsperadoPaso = false
 local tiempoAtascadoEvadiendo = 0
 local ultimaDistanciaEvasion = math.huge
 
+-- ====== EDITOR DE ZONAS SEGURAS ======
+local editandoZona = false
+local zonaSeleccionada = nil
+local marcadoresZona = {}
+
+local function crearMarcadoresZonas()
+    -- Borrar marcadores anteriores
+    for _, v in pairs(marcadoresZona) do
+        if v then
+            v:Destroy()
+        end
+    end
+    marcadoresZona = {}
+
+    for i, zona in ipairs(Datos.ZonasSeguras) do
+        local esfera = Instance.new("Part")
+        esfera.Name = "ZonaSegura_" .. i
+        esfera.Shape = Enum.PartType.Ball
+        esfera.Size = Vector3.new(2,2,2)
+        esfera.Anchored = true
+        esfera.CanCollide = false
+        esfera.Material = Enum.Material.Neon
+        esfera.Color = Color3.fromRGB(0,255,0)
+        esfera.Position = getVectorFromJson(zona)
+        esfera.Parent = workspace
+
+        local click = Instance.new("ClickDetector")
+        click.MaxActivationDistance = 32
+        click.Parent = esfera
+
+        click.MouseClick:Connect(function(jugador)
+            if jugador ~= player then return end
+            if not editandoZona then return end
+
+            zonaSeleccionada = i
+
+            for _, p in pairs(marcadoresZona) do
+                p.Color = Color3.fromRGB(0,255,0)
+            end
+
+            esfera.Color = Color3.fromRGB(255,255,0)
+
+            print("Zona seleccionada:", i)
+        end)
+
+        marcadoresZona[i] = esfera
+    end
+end
+
 local function setupCharacter(char)
     local humanoid = char:WaitForChild("Humanoid")
     humanoid.Died:Connect(function()
@@ -157,6 +206,77 @@ local function CreateUI()
         estado.indefinido = not estado.indefinido
         btnBucle.Text = "Bucle Indefinido: " .. (estado.indefinido and "ON" or "OFF")
     end)
+
+createButton("Mover Zona Segura", UDim2.new(0.05,0,0,235), function()
+
+    editandoZona = not editandoZona
+
+    if editandoZona then
+        crearMarcadoresZonas()
+        print("Modo edición activado")
+    else
+        for _, p in pairs(marcadoresZona) do
+            p:Destroy()
+        end
+        marcadoresZona = {}
+        zonaSeleccionada = nil
+        print("Modo edición desactivado")
+    end
+
+end)
+
+createButton("Guardar Posición", UDim2.new(0.05,0,0,280), function()
+
+    if not editandoZona then
+        warn("Activa primero el modo edición.")
+        return
+    end
+
+    if not zonaSeleccionada then
+        warn("Primero selecciona una zona segura.")
+        return
+    end
+
+    local char = player.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then
+        return
+    end
+
+    local pos = char.HumanoidRootPart.Position
+
+    Datos.ZonasSeguras[zonaSeleccionada] = {
+        X = pos.X,
+        Y = pos.Y,
+        Z = pos.Z
+    }
+
+    if marcadoresZona[zonaSeleccionada] then
+        marcadoresZona[zonaSeleccionada].Position = pos
+        marcadoresZona[zonaSeleccionada].Color = Color3.fromRGB(0,255,0)
+    end
+
+    print("Zona segura " .. zonaSeleccionada .. " movida.")
+
+    zonaSeleccionada = nil
+
+end)
+
+createButton("Copiar JSON", UDim2.new(0.05,0,0,325), function()
+
+    local json = HttpService:JSONEncode(Datos)
+
+    if setclipboard then
+        setclipboard(json)
+        print("JSON copiado al portapapeles.")
+    elseif toclipboard then
+        toclipboard(json)
+        print("JSON copiado al portapapeles.")
+    else
+        print(json)
+        warn("Tu ejecutor no tiene función para copiar.")
+    end
+
+end)
 
     local PeligroGui = Instance.new("ScreenGui")
     PeligroGui.Name = "PeligroInfoGUI"
