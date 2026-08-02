@@ -187,7 +187,7 @@ end
 local function isEnZonaSegura(pos)
     for _, zona in ipairs(Datos.ZonasSeguras) do
         local zonaPos = getVectorFromJson(zona)
-        if (zonaPos - pos).Magnitude <= 12 then
+        if (zonaPos - pos).Magnitude <= 0.5 then
             return true
         end
     end
