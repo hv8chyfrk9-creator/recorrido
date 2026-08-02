@@ -1,0 +1,339 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local CoreGui = game:GetService("CoreGui")
+local HttpService = game:GetService("HttpService")
+
+local player = Players.LocalPlayer
+
+-- Tus datos exportados
+local jsonDatos = [[
+{
+    "ZonasSeguras":[{"Y":-159.23814392089845,"X":-1430.70703125,"Z":-839.6890258789063},{"Y":-160.6757354736328,"X":-1457.099853515625,"Z":-860.6345825195313},{"Y":-141.25799560546876,"X":-1478.8321533203126,"Z":-782.51220703125},{"Y":-123.95800018310547,"X":-1433.881103515625,"Z":-727.498291015625},{"Y":-108.23399353027344,"X":-1478.9052734375,"Z":-677.49560546875},{"Y":-91.42888641357422,"X":-1432.34619140625,"Z":-624.055419921875},{"Y":-77.18991088867188,"X":-1476.19384765625,"Z":-578.7752685546875},{"Y":-69.53876495361328,"X":-1456.962890625,"Z":-504.71630859375},{"Y":214.9635009765625,"X":-1450.1644287109376,"Z":110.77545166015625},{"Y":532.7235107421875,"X":-1193.780517578125,"Z":958.2546997070313},{"Y":532.7235107421875,"X":-1197.4228515625,"Z":1122.055908203125},{"Y":532.7237548828125,"X":-1400.4129638671876,"Z":1345.2261962890626},{"Y":442.722412109375,"X":-2061.79638671875,"Z":1485.52294921875}],
+    "Peligros":["LavaPart","Tsunami","Hitbox","KillBall"],
+    "Recorrido":[{"Y":-159.04051208496095,"X":-1451.99462890625,"Z":-1000.1143188476563},{"Y":-159.04051208496095,"X":-1451.99462890625,"Z":-1000.1143188476563},{"Y":-160.77577209472657,"X":-1455.63720703125,"Z":-974.2083740234375},{"Y":-160.6840362548828,"X":-1460.39697265625,"Z":-899.6771850585938},{"Y":-160.6757354736328,"X":-1460.2864990234376,"Z":-863.8182373046875},{"Y":-157.7455596923828,"X":-1431.932373046875,"Z":-832.23779296875},{"Y":-143.06118774414063,"X":-1476.447509765625,"Z":-786.12109375},{"Y":-134.8393096923828,"X":-1459.259033203125,"Z":-758.079345703125},{"Y":-125.0720443725586,"X":-1434.266845703125,"Z":-731.0398559570313},{"Y":-107.82018280029297,"X":-1483.6751708984376,"Z":-676.1655883789063},{"Y":-93.60051727294922,"X":-1441.364990234375,"Z":-630.7926025390625},{"Y":-77.4996109008789,"X":-1474.7843017578126,"Z":-577.502197265625},{"Y":-69.5403060913086,"X":-1452.10986328125,"Z":-519.8666381835938},{"Y":-57.0469856262207,"X":-1457.1558837890626,"Z":-271.7964782714844},{"Y":-54.79095458984375,"X":-1457.22216796875,"Z":-194.4706268310547},{"Y":-50.32719802856445,"X":-1456.040771484375,"Z":-117.93565368652344},{"Y":-57.296592712402347,"X":-1453.097412109375,"Z":-6.160146713256836},{"Y":-57.05489730834961,"X":-1454.5281982421876,"Z":69.6152114868164},{"Y":26.377059936523439,"X":-1454.6932373046876,"Z":84.14273071289063},{"Y":114.11333465576172,"X":-1459.5604248046876,"Z":92.18734741210938},{"Y":184.88856506347657,"X":-1470.671142578125,"Z":97.0643081665039},{"Y":231.58738708496095,"X":-1471.489990234375,"Z":99.85983276367188},{"Y":218.9792938232422,"X":-1467.5208740234376,"Z":168.05792236328126},{"Y":214.6533966064453,"X":-1452.4498291015626,"Z":317.2666931152344},{"Y":214.6341094970703,"X":-1443.6959228515626,"Z":544.6707153320313},{"Y":286.3551940917969,"X":-1445.1893310546876,"Z":627.5027465820313},{"Y":379.58587646484377,"X":-1461.07275390625,"Z":627.97509765625},{"Y":367.9606628417969,"X":-1455.595947265625,"Z":530.7803955078125},{"Y":370.66937255859377,"X":-1415.0074462890626,"Z":497.0058288574219},{"Y":371.35784912109377,"X":-1305.6585693359376,"Z":556.4200439453125},{"Y":331.4186706542969,"X":-1224.1195068359376,"Z":737.7212524414063},{"Y":351.8059997558594,"X":-1280.90771484375,"Z":834.8336791992188},{"Y":370.2622375488281,"X":-1394.0123291015626,"Z":833.223388671875},{"Y":367.33203125,"X":-1400.181640625,"Z":771.4429931640625},{"Y":426.087890625,"X":-1403.0457763671876,"Z":724.2850341796875},{"Y":535.1876220703125,"X":-1403.0457763671876,"Z":724.2850341796875},{"Y":532.7249755859375,"X":-1401.8551025390626,"Z":746.2345581054688},{"Y":532.7161254882813,"X":-1289.9378662109376,"Z":882.2067260742188},{"Y":532.7219848632813,"X":-1218.2760009765626,"Z":973.4072875976563},{"Y":532.7160034179688,"X":-1252.7451171875,"Z":1122.0045166015626},{"Y":532.7152099609375,"X":-1375.8599853515626,"Z":1306.5185546875},{"Y":532.713623046875,"X":-1391.913818359375,"Z":1424.6051025390626},{"Y":532.7218627929688,"X":-1376.756591796875,"Z":1433.575927734375},{"Y":521.2454223632813,"X":-1421.7769775390626,"Z":1484.8997802734376},{"Y":442.7135314941406,"X":-1496.1629638671876,"Z":1505.4542236328126},{"Y":442.7092590332031,"X":-1624.181640625,"Z":1492.021728515625},{"Y":442.71356201171877,"X":-1774.934326171875,"Z":1488.2513427734376},{"Y":442.7134094238281,"X":-1927.14599609375,"Z":1487.4808349609376},{"Y":442.72039794921877,"X":-2039.3052978515626,"Z":1485.5391845703126},{"Y":444.4685363769531,"X":-2063.6953125,"Z":1457.5950927734376},{"Y":-160.6757354736328,"X":-1461.448974609375,"Z":-1007.93701171875}]
+}
+]]
+
+local Datos = HttpService:JSONDecode(jsonDatos)
+
+local estado = {
+    corriendo = false,
+    pausado = false,
+    indefinido = false,
+    indiceActual = 1,
+    velocidadBase = 16,
+    evadiendo = false
+}
+
+local histPeligrosDist = {} 
+local infoLabelPeligro = nil 
+
+local tiempoPausaSegura = 0
+local haEsperadoPaso = false
+local tiempoAtascadoEvadiendo = 0
+local ultimaDistanciaEvasion = math.huge
+
+local function setupCharacter(char)
+    local humanoid = char:WaitForChild("Humanoid")
+    humanoid.Died:Connect(function()
+        estado.corriendo = false
+        estado.pausado = false
+        estado.evadiendo = false
+        estado.indiceActual = 1 
+        tiempoPausaSegura = 0
+        haEsperadoPaso = false
+        tiempoAtascadoEvadiendo = 0
+    end)
+end
+
+player.CharacterAdded:Connect(setupCharacter)
+if player.Character then
+    setupCharacter(player.Character)
+end
+
+local function CreateUI()
+    if CoreGui:FindFirstChild("BotControlGUI") then CoreGui.BotControlGUI:Destroy() end
+    if CoreGui:FindFirstChild("PeligroInfoGUI") then CoreGui.PeligroInfoGUI:Destroy() end
+
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "BotControlGUI"
+    ScreenGui.Parent = CoreGui
+
+    local MainFrame = Instance.new("Frame")
+    MainFrame.Size = UDim2.new(0, 250, 0, 320)
+    MainFrame.Position = UDim2.new(0.05, 0, 0.3, 0)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    MainFrame.Active = true
+    MainFrame.Draggable = true
+    MainFrame.Parent = ScreenGui
+
+    local TitleBar = Instance.new("Frame")
+    TitleBar.Size = UDim2.new(1, 0, 0, 30)
+    TitleBar.BackgroundColor3 = Color3.fromRGB(50, 50, 200)
+    TitleBar.Parent = MainFrame
+
+    local TitleText = Instance.new("TextLabel")
+    TitleText.Size = UDim2.new(0.8, 0, 1, 0)
+    TitleText.BackgroundTransparency = 1
+    TitleText.Text = "IA Recorrido"
+    TitleText.TextColor3 = Color3.new(1, 1, 1)
+    TitleText.Font = Enum.Font.SourceSansBold
+    TitleText.TextSize = 16
+    TitleText.Parent = TitleBar
+
+    local MinButton = Instance.new("TextButton")
+    MinButton.Size = UDim2.new(0.2, 0, 1, 0)
+    MinButton.Position = UDim2.new(0.8, 0, 0, 0)
+    MinButton.Text = "-"
+    MinButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+    MinButton.TextColor3 = Color3.new(1, 1, 1)
+    MinButton.TextSize = 20
+    MinButton.Parent = TitleBar
+
+    local ContentFrame = Instance.new("Frame")
+    ContentFrame.Size = UDim2.new(1, 0, 1, -30)
+    ContentFrame.Position = UDim2.new(0, 0, 0, 30)
+    ContentFrame.BackgroundTransparency = 1
+    ContentFrame.Parent = MainFrame
+
+    local minimizado = false
+    MinButton.MouseButton1Click:Connect(function()
+        minimizado = not minimizado
+        ContentFrame.Visible = not minimizado
+        MainFrame.Size = minimizado and UDim2.new(0, 250, 0, 30) or UDim2.new(0, 250, 0, 320)
+        MinButton.Text = minimizado and "+" or "-"
+    end)
+
+    local function createButton(texto, pos, callback)
+        local btn = Instance.new("TextButton")
+        btn.Size = UDim2.new(0.9, 0, 0, 35)
+        btn.Position = pos
+        btn.Text = texto
+        btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        btn.TextColor3 = Color3.new(1, 1, 1)
+        btn.Font = Enum.Font.SourceSansBold
+        btn.TextSize = 14
+        btn.Parent = ContentFrame
+        btn.MouseButton1Click:Connect(callback)
+        return btn
+    end
+
+    local inputVel = Instance.new("TextBox")
+    inputVel.Size = UDim2.new(0.9, 0, 0, 35)
+    inputVel.Position = UDim2.new(0.05, 0, 0, 10)
+    inputVel.PlaceholderText = "Velocidad (Max 150)"
+    inputVel.Text = "16"
+    inputVel.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    inputVel.TextColor3 = Color3.new(1, 1, 1)
+    inputVel.Parent = ContentFrame
+    inputVel.FocusLost:Connect(function()
+        local num = tonumber(inputVel.Text)
+        if num then
+            estado.velocidadBase = math.clamp(num, 0, 150)
+            inputVel.Text = tostring(estado.velocidadBase)
+        end
+    end)
+
+    createButton("Empezar / Continuar", UDim2.new(0.05, 0, 0, 55), function()
+        estado.corriendo = true
+        estado.pausado = false
+    end)
+
+    createButton("Pausar Recorrido", UDim2.new(0.05, 0, 0, 100), function()
+        estado.pausado = true
+        local char = player.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid:MoveTo(char.HumanoidRootPart.Position)
+        end
+    end)
+
+    createButton("Reiniciar desde Cero", UDim2.new(0.05, 0, 0, 145), function()
+        estado.indiceActual = 1
+        estado.corriendo = true
+        estado.pausado = false
+    end)
+
+    local btnBucle = createButton("Bucle Indefinido: OFF", UDim2.new(0.05, 0, 0, 190), function()
+        estado.indefinido = not estado.indefinido
+        btnBucle.Text = "Bucle Indefinido: " .. (estado.indefinido and "ON" or "OFF")
+    end)
+
+    local PeligroGui = Instance.new("ScreenGui")
+    PeligroGui.Name = "PeligroInfoGUI"
+    PeligroGui.Parent = CoreGui
+
+    local InfoFrame = Instance.new("Frame")
+    InfoFrame.Size = UDim2.new(0, 180, 0, 40)
+    InfoFrame.Position = UDim2.new(1, -200, 0.5, 0)
+    InfoFrame.BackgroundColor3 = Color3.fromRGB(200, 30, 30)
+    InfoFrame.BorderSizePixel = 2
+    InfoFrame.BorderColor3 = Color3.new(0, 0, 0)
+    InfoFrame.Parent = PeligroGui
+
+    infoLabelPeligro = Instance.new("TextLabel")
+    infoLabelPeligro.Size = UDim2.new(1, 0, 1, 0)
+    infoLabelPeligro.BackgroundTransparency = 1
+    infoLabelPeligro.Text = "Peligro a: Ninguno"
+    infoLabelPeligro.TextColor3 = Color3.new(1, 1, 1)
+    infoLabelPeligro.Font = Enum.Font.SourceSansBold
+    infoLabelPeligro.TextSize = 18
+    infoLabelPeligro.Parent = InfoFrame
+end
+
+local function getVectorFromJson(nodo)
+    return Vector3.new(nodo.X, nodo.Y, nodo.Z)
+end
+
+local function isEnZonaSegura(pos)
+    for _, zona in ipairs(Datos.ZonasSeguras) do
+        local zonaPos = getVectorFromJson(zona)
+        if (zonaPos - pos).Magnitude <= 12 then
+            return true
+        end
+    end
+    return false
+end
+
+local function getPeligroMasCercano()
+    local char = player.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return nil, math.huge end
+    local hrp = char.HumanoidRootPart
+
+    local peligroCercano = nil
+    local minDist = math.huge
+
+    for _, desc in ipairs(workspace:GetDescendants()) do
+        if desc:IsA("BasePart") and table.find(Datos.Peligros, desc.Name) then
+            local dist = (desc.Position - hrp.Position).Magnitude
+            if dist < minDist then
+                minDist = dist
+                peligroCercano = desc
+            end
+        end
+    end
+    return peligroCercano, minDist
+end
+
+CreateUI()
+
+RunService.Heartbeat:Connect(function(deltaTime)
+    local char = player.Character
+    if not char then return end
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not humanoid or not hrp or humanoid.Health <= 0 then return end
+
+    local peligroActual, distPeligro = getPeligroMasCercano()
+    local enZonaSegura = isEnZonaSegura(hrp.Position)
+    local velocidadAcercamiento = 0
+
+    if peligroActual then
+        if infoLabelPeligro then
+            infoLabelPeligro.Text = string.format("Peligro a: %.1f studs", distPeligro)
+        end
+
+        local lastDist = histPeligrosDist[peligroActual] or distPeligro
+        velocidadAcercamiento = (lastDist - distPeligro) / deltaTime
+        histPeligrosDist[peligroActual] = distPeligro
+    else
+        if infoLabelPeligro then
+            infoLabelPeligro.Text = "Peligro a: Ninguno"
+        end
+    end
+
+    local bloqueadoPorPeligro = false
+
+    -- Zona Segura: esperar 0.3s a que pase el peligro
+    if enZonaSegura and peligroActual and distPeligro <= 50 then
+        if not haEsperadoPaso then
+            bloqueadoPorPeligro = true
+            if velocidadAcercamiento < -0.1 then
+                tiempoPausaSegura = 0.3
+                haEsperadoPaso = true
+            end
+        end
+    end
+
+    if not peligroActual or distPeligro > 50 then
+        haEsperadoPaso = false
+    end
+
+    if tiempoPausaSegura > 0 then
+        tiempoPausaSegura = tiempoPausaSegura - deltaTime
+        bloqueadoPorPeligro = true
+    end
+
+    -- Detección de peligro por enfrente
+    local vienePorFrente = false
+    if peligroActual and not enZonaSegura then
+        local dirPeligro = (peligroActual.Position - hrp.Position).Unit
+        local lookVector = hrp.CFrame.LookVector
+        if lookVector:Dot(dirPeligro) > 0.5 then
+            vienePorFrente = true
+        end
+    end
+
+    -- LÓGICA DE EVASIÓN: RETROCEDER AL CHECKPOINT ANTERIOR
+    if not enZonaSegura and peligroActual and distPeligro <= 100 and vienePorFrente and velocidadAcercamiento > 0.5 then
+        if not estado.evadiendo then
+            estado.evadiendo = true
+            -- Retroceder al checkpoint anterior inmediatamente
+            estado.indiceActual = math.max(1, estado.indiceActual - 1)
+            tiempoAtascadoEvadiendo = 0
+            ultimaDistanciaEvasion = math.huge
+        else
+            -- Verificamos si se quedó atascado intentando llegar al checkpoint de retroceso
+            local nodoActualPos = getVectorFromJson(Datos.Recorrido[estado.indiceActual])
+            local distAlNodo = (hrp.Position - nodoActualPos).Magnitude
+            
+            if math.abs(ultimaDistanciaEvasion - distAlNodo) < 0.5 then
+                tiempoAtascadoEvadiendo = tiempoAtascadoEvadiendo + deltaTime
+                -- Si lleva más de 1 segundo sin poder avanzar hacia ese checkpoint, retroceder al anterior de ese
+                if tiempoAtascadoEvadiendo >= 1.0 then
+                    estado.indiceActual = math.max(1, estado.indiceActual - 1)
+                    tiempoAtascadoEvadiendo = 0
+                end
+            else
+                tiempoAtascadoEvadiendo = 0
+            end
+            ultimaDistanciaEvasion = distAlNodo
+        end
+
+        humanoid.AutoRotate = true
+        humanoid.WalkSpeed = math.clamp(estado.velocidadBase + 40, 16, 150)
+    else
+        estado.evadiendo = false
+        tiempoAtascadoEvadiendo = 0
+    end
+
+    if not estado.evadiendo then
+        humanoid.WalkSpeed = estado.velocidadBase
+    end
+
+    -- MOVIMIENTO PRINCIPAL O DE RETROCESO
+    if bloqueadoPorPeligro then
+        humanoid:MoveTo(hrp.Position)
+    elseif estado.corriendo and not estado.pausado then
+        local totalNodos = #Datos.Recorrido
+        if estado.indiceActual <= totalNodos then
+            local nodoActual = getVectorFromJson(Datos.Recorrido[estado.indiceActual])
+            
+            humanoid.AutoRotate = true
+            humanoid:MoveTo(nodoActual)
+
+            -- Si estamos evadiendo, podemos requerir menos distancia para dar por superado el checkpoint trasero o avanzar al siguiente si el peligro pasó
+            local rangoLlegada = estado.evadiendo and 6 or 4
+            if (hrp.Position - Vector3.new(nodoActual.X, hrp.Position.Y, nodoActual.Z)).Magnitude < rangoLlegada then
+                if not estado.evadiendo then
+                    estado.indiceActual = estado.indiceActual + 1
+                end
+            end
+        else
+            if estado.indefinido then
+                estado.indiceActual = 1
+            else
+                estado.corriendo = false
+            end
+        end
+    end
+end)
